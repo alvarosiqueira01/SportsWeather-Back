@@ -1,0 +1,25 @@
+{
+  "scripts": {
+
+    "seed": "tsx seed.ts"
+
+  },
+
+  "dependencies": {
+
+    "mongoose": "^8",
+
+    "bcrypt": "^5",
+
+    "dotenv": "^16"
+
+  },
+
+  "devDependencies": {
+
+    "tsx": "^4",
+
+    "typescript": "^5"
+
+  }
+}
