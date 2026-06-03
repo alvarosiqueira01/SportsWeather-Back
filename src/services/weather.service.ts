@@ -1,58 +1,61 @@
-import { getWeather } from "./openmeteo.service";
-import { calculateHeatIndex } from "../utils/heatIndex";
-import { calculateWindChill } from "../utils/windChill";
-import { calculateComfortScore } from "./scoring.service";
+import { getWeather }
+from "./openmeteo.service";
+
+import { WeatherRepository }
+from "../repositories/weather.repository";
+
+const repo = new WeatherRepository();
 
 export async function evaluateWeather(
   lat: number,
   lon: number,
-  activity: string
+  activity: string,
+  userId?: string
 ) {
-  const weather = await getWeather(
+  
+  const cached = await repo.getCache(lat, lon);
+  if (cached) {
+    if (userId) {
+      await repo.saveUserSearch({
+        userId,
+        query: { city: "Busca via Coordenadas", coordinates: [lon, lat] },
+        searchedAt: new Date()
+      });
+    }
+    return cached;
+  }
+
+  const weather = await getWeather(lat, lon);
+
+  await repo.saveCache({
     lat,
-    lon
-  );
+    lon,
+    provider: "openmeteo",
+    temperature: weather.temperature_2m,
+    humidity: weather.relative_humidity_2m,
+    windSpeed: weather.wind_speed_10m,
+    timestamp: new Date()
+  });
 
-  const heatIndex =
-    calculateHeatIndex(
-      weather.temperature_2m,
-      weather.relative_humidity_2m
-    );
+  await repo.saveHistory({
+    location: { type: "Point", coordinates: [lon, lat] },
+    capturedAt: new Date(),
+    temperature: weather.temperature_2m,
+    humidity: weather.relative_humidity_2m,
+    wind: weather.wind_speed_10m,
+    provider: "openmeteo"
+  });
 
-  const windChill =
-    calculateWindChill(
-      weather.temperature_2m,
-      weather.wind_speed_10m
-    );
-
-  const comfortScore =
-    calculateComfortScore({
-      activity,
-      temp: weather.temperature_2m,
-      humidity:
-        weather.relative_humidity_2m,
-      wind:
-        weather.wind_speed_10m
+  if (userId) {
+    await repo.saveUserSearch({
+      userId,
+      query: {
+        city: `Lat: ${lat}, Lon: ${lon}`, 
+        coordinates: [lon, lat]
+      },
+      searchedAt: new Date()
     });
+  }
 
-  return {
-    activity,
-    temperature:
-      weather.temperature_2m,
-    humidity:
-      weather.relative_humidity_2m,
-    windSpeed:
-      weather.wind_speed_10m,
-    heatIndex,
-    windChill,
-    comfortScore,
-    verdict:
-      comfortScore >= 80
-        ? "EXCELLENT"
-        : comfortScore >= 60
-        ? "GOOD"
-        : comfortScore >= 40
-        ? "MODERATE"
-        : "POOR"
-  };
+  return weather;
 }

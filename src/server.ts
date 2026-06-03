@@ -1,7 +1,26 @@
 import app from "./app";
 
-const PORT = process.env.PORT || 8080;
+import { connectMongo }
+from "./config/mongo";
 
-app.listen(PORT, () => {
-  console.log(`API running on port ${PORT}`);
-});
+async function bootstrap(){
+
+   await connectMongo();
+
+   const port =
+      process.env.PORT || 8080;
+
+   app.listen(
+      port,
+      ()=>{
+
+         console.log(
+            `Running ${port}`
+         );
+
+      }
+   );
+
+}
+
+bootstrap();

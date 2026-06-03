@@ -1,5 +1,6 @@
 import router from "./weather.routes";
-import { Request, Response } from "express";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { generateReport, downloadReport } from "../controllers/report.controller";
 
 router.post(
  "/generate",
@@ -11,24 +12,5 @@ router.get(
  downloadReport
 );
 
-export function generateReport(
- req: Request,
- res: Response
-){
- res.status(501).json({
-   message:
-   "Report generation not implemented. AWS S3 pending."
- });
-}
-
-export function downloadReport(
- req: Request,
- res: Response
-){
- res.status(501).json({
-   message:
-   "Signed URLs unavailable. AWS S3 pending."
- });
-}
 
 export default router;

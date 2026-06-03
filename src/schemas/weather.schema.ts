@@ -11,3 +11,5 @@ export const weatherQuerySchema = z.object({
     "kitesurf"
   ])
 });
+
+export default weatherQuerySchema
