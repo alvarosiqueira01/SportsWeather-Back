@@ -15,26 +15,30 @@ new Schema({
 
  },
 
- name:String,
+  name:String,
 
- city:String,
+  city:String,
 
- coordinates: {
+  coordinates: {
 
-   type: {
+    type: {
 
-      type:String,
+       type:String,
 
-      enum:["Point"]
+       enum:["Point"]
 
-   },
+    },
 
-   coordinates:[Number]
+    coordinates:[Number]
 
- }
+  },
+
+  route: [{
+    type: [Number]
+  }]
 
 },{
- timestamps:true
+  timestamps:true
 });
 
 FavoriteSchema.index({
