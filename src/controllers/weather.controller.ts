@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { evaluateWeather } from "../services/weather.service";
+import { evaluateWeather, evaluateRoute } from "../services/weather.service";
 import { calculateComfortScore } from "../services/scoring.service";
 import { calculateHeatIndex } from "../utils/heatIndex";
 import { calculateWindChill } from "../utils/windChill";
@@ -54,6 +54,26 @@ export async function evaluate(req: Request, res: Response) {
     };
 
     return res.json(dto);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export async function evaluateRouteHandler(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.userId;
+    const { waypoints, activity } = req.body;
+
+    if (!waypoints || !Array.isArray(waypoints) || waypoints.length < 2) {
+      return res.status(400).json({ error: "waypoints must be an array with at least 2 [lon, lat] pairs" });
+    }
+
+    if (!activity) {
+      return res.status(400).json({ error: "activity is required" });
+    }
+
+    const result = await evaluateRoute(waypoints, activity, userId);
+    return res.json(result);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
