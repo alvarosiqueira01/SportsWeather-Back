@@ -1,6 +1,8 @@
+import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import router from "./weather.routes";
 import { profile, updatePreferences } from "../controllers/user.controller";
+
+const router = Router();
 
 router.get(
   "/profile",

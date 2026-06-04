@@ -1,10 +1,10 @@
-import router from "./weather.routes";
+import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { Request, Response } from "express";
 import { validate } from "../middlewares/validation.middleware";
 import { saveFavoriteLocationSchema } from "../schemas/location.schema";
-import { saveFavorite, history } from "../controllers/location.controller";
-import { getFavorites } from "../controllers/location.controller";
+import { saveFavorite, history, getFavorites } from "../controllers/location.controller";
+
+const router = Router();
 
 router.get(
   "/favorites",
@@ -13,17 +13,16 @@ router.get(
 );
 
 router.post(
- "/favorites",
- validate(saveFavoriteLocationSchema),
- authMiddleware,
- saveFavorite
+  "/favorites",
+  validate(saveFavoriteLocationSchema),
+  authMiddleware,
+  saveFavorite
 );
 
 router.get(
- "/history",
- authMiddleware,
- history
+  "/history",
+  authMiddleware,
+  history
 );
-
 
 export default router;

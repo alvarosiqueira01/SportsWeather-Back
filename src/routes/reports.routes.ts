@@ -1,16 +1,19 @@
-import router from "./weather.routes";
+import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { generateReport, downloadReport } from "../controllers/report.controller";
 
+const router = Router();
+
 router.post(
- "/generate",
- generateReport
+  "/generate",
+  authMiddleware,
+  generateReport
 );
 
 router.get(
- "/download",
- downloadReport
+  "/download",
+  authMiddleware,
+  downloadReport
 );
-
 
 export default router;
