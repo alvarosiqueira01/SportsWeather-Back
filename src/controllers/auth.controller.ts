@@ -46,17 +46,22 @@ export async function login(
 
 export async function register(req: Request, res: Response) {
   try {
-    const { email, username, password } = req.body;
+    const { email, username, password, sports, preferencesMode, customThresholds, favoriteLocations } = req.body;
 
-    // Validação básica de campos obrigatórios
     if (!email || !username || !password) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Executa a criação no banco de dados
-    const user = await registerUser(email, username, password);
+    const user = await registerUser({
+      email,
+      username,
+      password,
+      sports,
+      preferencesMode,
+      customThresholds,
+      favoriteLocations,
+    });
 
-    // Gera o token de acesso (assim o usuário já loga direto após registrar)
     const token = generateToken(user.id);
 
     return res.status(201).json({
@@ -65,11 +70,10 @@ export async function register(req: Request, res: Response) {
         id: user.id,
         email: user.email,
         username: user.username,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error: any) {
-    // Tratamento de erros de negócio (ex: usuário já existe)
     return res.status(400).json({ error: error.message });
   }
 }
