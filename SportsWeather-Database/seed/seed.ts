@@ -78,9 +78,7 @@ async function seed(){
 
       humidityMax:80,
 
-      windMax:20,
-
-      uvMax:8
+      windMax:20
 
    }]
 

@@ -26,11 +26,9 @@ new Schema({
 
    humidityMax:Number,
 
-   windMax:Number,
+    windMax:Number
 
-   uvMax:Number
-
- }]
+  }]
 
 },{
  timestamps:true

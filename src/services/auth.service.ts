@@ -57,9 +57,8 @@ interface RegisterOptions {
     temperatureMax: number;
     humidityMax: number;
     windMax: number;
-    uvMax: number;
   }>;
-  favoriteLocations?: Array<{ name: string }>;
+  favoriteLocations?: Array<{ name: string; coordinates?: { lat: number; lon: number } }>;
 }
 
 export async function registerUser({
@@ -97,11 +96,11 @@ export async function registerUser({
 
   if (sports && sports.length > 0) {
     const sportDefaults: Record<string, any> = {
-      running: { temperatureMin: 10, temperatureMax: 30, humidityMax: 85, windMax: 25, uvMax: 8 },
-      cycling: { temperatureMin: 12, temperatureMax: 35, humidityMax: 75, windMax: 30, uvMax: 9 },
-      calisthenics: { temperatureMin: 15, temperatureMax: 32, humidityMax: 80, windMax: 20, uvMax: 7 },
-      surf: { temperatureMin: 18, temperatureMax: 32, humidityMax: 90, windMax: 35, uvMax: 10 },
-      kitesurf: { temperatureMin: 20, temperatureMax: 35, humidityMax: 85, windMax: 45, uvMax: 10 },
+      running: { temperatureMin: 10, temperatureMax: 30, humidityMax: 85, windMax: 25 },
+      cycling: { temperatureMin: 12, temperatureMax: 35, humidityMax: 75, windMax: 30 },
+      calisthenics: { temperatureMin: 15, temperatureMax: 32, humidityMax: 80, windMax: 20 },
+      surf: { temperatureMin: 18, temperatureMax: 32, humidityMax: 90, windMax: 35 },
+      kitesurf: { temperatureMin: 20, temperatureMax: 35, humidityMax: 85, windMax: 45 },
     };
 
     const thresholds = sports.map((s) => {
@@ -121,14 +120,21 @@ export async function registerUser({
   }
 
   if (favoriteLocations && favoriteLocations.length > 0) {
+    console.log("[registerUser] Creating favorites for user", newUser.id, ":", JSON.stringify(favoriteLocations));
     const FavoriteLocation = (await import("../models/FavoriteLocation")).default;
-    await FavoriteLocation.insertMany(
+    const result = await FavoriteLocation.insertMany(
       favoriteLocations.map((loc) => ({
         userId: newUser._id,
         name: loc.name,
         city: loc.name,
+        ...(loc.coordinates
+          ? { coordinates: { type: "Point", coordinates: [loc.coordinates.lon, loc.coordinates.lat] } }
+          : {}),
       }))
     );
+    console.log("[registerUser] Favorites created:", result.length, "docs");
+  } else {
+    console.log("[registerUser] No favoriteLocations to create");
   }
 
   return newUser;

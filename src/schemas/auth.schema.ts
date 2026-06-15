@@ -17,7 +17,6 @@ export const registerSchema = z.object({
           temperatureMax: z.number(),
           humidityMax: z.number(),
           windMax: z.number(),
-          uvMax: z.number(),
         })
       )
       .optional(),
@@ -25,6 +24,10 @@ export const registerSchema = z.object({
       .array(
         z.object({
           name: z.string().min(1, "Nome do local é obrigatório"),
+          coordinates: z.object({
+            lat: z.number().min(-90).max(90),
+            lon: z.number().min(-180).max(180),
+          }).optional(),
         })
       )
       .optional(),

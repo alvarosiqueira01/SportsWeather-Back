@@ -48,6 +48,8 @@ export async function register(req: Request, res: Response) {
   try {
     const { email, username, password, sports, preferencesMode, customThresholds, favoriteLocations } = req.body;
 
+    console.log("[register] favoriteLocations received:", JSON.stringify(favoriteLocations));
+
     if (!email || !username || !password) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -61,6 +63,8 @@ export async function register(req: Request, res: Response) {
       customThresholds,
       favoriteLocations,
     });
+
+    console.log("[register] User created:", user.id);
 
     const token = generateToken(user.id);
 
