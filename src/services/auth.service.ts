@@ -120,9 +120,8 @@ export async function registerUser({
   }
 
   if (favoriteLocations && favoriteLocations.length > 0) {
-    console.log("[registerUser] Creating favorites for user", newUser.id, ":", JSON.stringify(favoriteLocations));
     const FavoriteLocation = (await import("../models/FavoriteLocation")).default;
-    const result = await FavoriteLocation.insertMany(
+    await FavoriteLocation.insertMany(
       favoriteLocations.map((loc) => ({
         userId: newUser._id,
         name: loc.name,
@@ -132,9 +131,6 @@ export async function registerUser({
           : {}),
       }))
     );
-    console.log("[registerUser] Favorites created:", result.length, "docs");
-  } else {
-    console.log("[registerUser] No favoriteLocations to create");
   }
 
   return newUser;

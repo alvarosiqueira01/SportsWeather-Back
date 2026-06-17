@@ -7,6 +7,7 @@ from "../repositories/weather.repository";
 import { calculateComfortScore } from "./scoring.service";
 import { calculateHeatIndex } from "../utils/heatIndex";
 import { calculateWindChill } from "../utils/windChill";
+import { haversineDistance } from "../utils/haversine";
 import type { RouteEvaluationDTO, RouteSegment, CriticalSegment } from "../dtos/route.dto";
 
 const repo = new WeatherRepository();
@@ -179,8 +180,16 @@ export async function evaluateRoute(
 
   const criticalSegments = findCriticalSegments(results);
 
+  let totalDistance = 0;
+  for (let i = 0; i < waypoints.length - 1; i++) {
+    const [lon1, lat1] = waypoints[i];
+    const [lon2, lat2] = waypoints[i + 1];
+    totalDistance += haversineDistance(lat1, lon1, lat2, lon2);
+  }
+
   return {
     activity,
+    totalDistance: Math.round(totalDistance * 10) / 10,
     overallScore,
     overallVerdict: getVerdict(overallScore),
     segments: results,
