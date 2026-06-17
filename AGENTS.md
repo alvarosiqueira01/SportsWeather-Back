@@ -31,7 +31,7 @@ SportsWeather-Database/    ← MongoDB infra (Docker + seed)
 | `npm run dev` | root | Dev server via `ts-node-dev --respawn src/server.ts` |
 | `npm run build` | root | `tsc` → `dist/` |
 | `npm start` | root | `node dist/server.js` |
-| `npm test` | root | `jest` (no test files exist yet) |
+| `npm test` | root | `jest` (unit tests for utils/scoring/schemas + supertest smoke test of `app`) |
 | `npm run lint` | root | `eslint .` (flat config; `no-explicit-any` is a warning, not an error) |
 | `docker compose up -d` | `SportsWeather-Database/` | Start MongoDB 8 container |
 | `npm run seed` | `SportsWeather-Database/seed/` | Populate DB with test data |
